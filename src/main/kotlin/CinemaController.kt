@@ -31,7 +31,6 @@ class CinemaController(
             OutputView.showMovieScreenings(onDateMovieScreening)
             val selectMovieScreening = selectMovieScreening(onDateMovieScreening)
             OutputView.showMovieSeatGroup(selectMovieScreening)
-
             reserveSeats(selectMovieScreening)
         } while (InputView.askReserveMore())
         // 결제

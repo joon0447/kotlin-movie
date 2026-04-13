@@ -8,7 +8,8 @@ import model.seat.SeatRow
 class CinemaKiosk(
     val cinemaSchedule: CinemaSchedule,
 ) {
-    val reserveResults: MutableList<MovieReservationResult.Success> = mutableListOf()
+    private val _reserveResults: MutableList<MovieReservationResult.Success> = mutableListOf()
+    val reserveResults: List<MovieReservationResult.Success> get() = _reserveResults.toList()
 
     fun reserve(
         movieScreening: MovieScreening,
@@ -16,7 +17,7 @@ class CinemaKiosk(
         seatColumn: SeatColumn,
     ): MovieReservationResult {
         val seat = movieScreening.getSeat(seatRow, seatColumn) ?: return MovieReservationResult.Failed
-        if (reserveResults.any {
+        if (_reserveResults.any {
                 it.screenTime != movieScreening.screenTime &&
                     it.screenTime.overlaps(movieScreening.screenTime)
             }
@@ -31,7 +32,7 @@ class CinemaKiosk(
                     screenTime = movieScreening.screenTime,
                     seat = seat,
                 )
-            reserveResults.add(result)
+            _reserveResults.add(result)
             return result
         }
         return MovieReservationResult.Failed
