@@ -15,8 +15,7 @@ class CinemaKiosk(
         seatRow: SeatRow,
         seatColumn: SeatColumn,
     ): MovieReservationResult {
-        val seat = movieScreening.getSeat(seatRow, seatColumn)
-
+        val seat = movieScreening.getSeat(seatRow, seatColumn) ?: return MovieReservationResult.Failed
         if (reserveResults.any {
                 it.screenTime != movieScreening.screenTime &&
                     it.screenTime.overlaps(movieScreening.screenTime)
