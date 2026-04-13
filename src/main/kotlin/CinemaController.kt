@@ -5,7 +5,6 @@ import model.movie.Movie
 import model.movie.MovieCatalog
 import model.payment.MoviePayment
 import model.payment.PayType
-import model.payment.Receipt
 import model.payment.policy.EarlyLateDiscount
 import model.payment.policy.MovieDayDiscount
 import model.payment.policy.PayTypeDiscount
@@ -36,16 +35,7 @@ class CinemaController(
             reserveSeats(selectMovieScreening)
         } while (InputView.askReserveMore())
         // 결제
-        val totalPrice = processPayment()
-        OutputView.showTotalPrice(totalPrice.finalPrice)
-
-        if (InputView.askPaymentConfirm()) {
-            OutputView.totalReservation(
-                successResults = cinemaKiosk.reserveResults,
-                price = totalPrice.finalPrice,
-                point = totalPrice.usedPoint,
-            )
-        }
+        processPayment()
         OutputView.end()
     }
 
@@ -103,7 +93,7 @@ class CinemaController(
         }
     }
 
-    private fun processPayment(): Receipt {
+    private fun processPayment() {
         while (true) {
             try {
                 OutputView.showShoppingCart(successResults = cinemaKiosk.reserveResults)
@@ -121,10 +111,26 @@ class CinemaController(
                                 PayTypeDiscount(),
                             ),
                     )
-                return moviePayment.getReceipt(payType, point)
+                val finalPrice = moviePayment.getFinalPrice(payType)
+                OutputView.showTotalPrice(finalPrice)
+                askPaymentConfirm(finalPrice, point)
+                return
             } catch (e: IllegalArgumentException) {
                 OutputView.showErrorMessage(e.message)
             }
+        }
+    }
+
+    private fun askPaymentConfirm(
+        finalPrice: Int,
+        point: Int,
+    ) {
+        if (InputView.askPaymentConfirm()) {
+            OutputView.totalReservation(
+                successResults = cinemaKiosk.reserveResults,
+                price = finalPrice,
+                point = point,
+            )
         }
     }
 }
