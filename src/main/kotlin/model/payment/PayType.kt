@@ -1,16 +1,19 @@
 package model.payment
 
+import model.payment.DiscountPolicyObject.CASH_DISCOUNT_RATE
+import model.payment.DiscountPolicyObject.CREDIT_CARD_DISCOUNT_RATE
+
 enum class PayType(
     val id: Int,
     val discountRate: Double,
 ) {
     CREDIT_CARD(
         id = 1,
-        discountRate = DiscountPolicy.CREDIT_CARD_DISCOUNT_RATE,
+        discountRate = CREDIT_CARD_DISCOUNT_RATE,
     ),
     CASH(
         id = 2,
-        discountRate = DiscountPolicy.CASH_DISCOUNT_RATE,
+        discountRate = CASH_DISCOUNT_RATE,
     ),
     ;
 

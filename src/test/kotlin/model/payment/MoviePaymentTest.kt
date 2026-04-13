@@ -4,6 +4,10 @@ import model.CinemaTime
 import model.CinemaTimeRange
 import model.MovieReservationResult
 import model.fixture.MovieFixture
+import model.payment.policy.EarlyLateDiscount
+import model.payment.policy.MovieDayDiscount
+import model.payment.policy.PayTypeDiscount
+import model.payment.policy.PointDiscount
 import model.seat.Seat
 import model.seat.SeatColumn
 import model.seat.SeatGrade
@@ -54,6 +58,13 @@ class MoviePaymentTest {
                                     ),
                             ),
                         ),
+                    policies =
+                        listOf(
+                            MovieDayDiscount(),
+                            EarlyLateDiscount(),
+                            PointDiscount(0),
+                            PayTypeDiscount(),
+                        ),
                 ).originalPrice,
             ).isEqualTo(33_000)
     }
@@ -93,11 +104,18 @@ class MoviePaymentTest {
                                 ),
                         ),
                     ),
+                policies =
+                    listOf(
+                        MovieDayDiscount(),
+                        EarlyLateDiscount(),
+                        PointDiscount(0),
+                        PayTypeDiscount(),
+                    ),
             )
 
         Assertions
             .assertThat(
-                moviePayment.getFinalPrice(payType = PayType.CREDIT_CARD, point = 0),
+                moviePayment.getFinalPrice(payType = PayType.CREDIT_CARD),
             ).isEqualTo(28_215)
     }
 
@@ -136,11 +154,18 @@ class MoviePaymentTest {
                                 ),
                         ),
                     ),
+                policies =
+                    listOf(
+                        MovieDayDiscount(),
+                        EarlyLateDiscount(),
+                        PointDiscount(0),
+                        PayTypeDiscount(),
+                    ),
             )
 
         Assertions
             .assertThat(
-                moviePayment.getFinalPrice(payType = PayType.CASH, point = 0),
+                moviePayment.getFinalPrice(payType = PayType.CASH),
             ).isEqualTo(29_106)
     }
 
@@ -179,11 +204,18 @@ class MoviePaymentTest {
                                 ),
                         ),
                     ),
+                policies =
+                    listOf(
+                        MovieDayDiscount(),
+                        EarlyLateDiscount(),
+                        PointDiscount(3000),
+                        PayTypeDiscount(),
+                    ),
             )
 
         Assertions
             .assertThat(
-                moviePayment.getFinalPrice(payType = PayType.CASH, point = 3000),
+                moviePayment.getFinalPrice(payType = PayType.CASH),
             ).isEqualTo(26_166)
     }
 
@@ -211,10 +243,17 @@ class MoviePaymentTest {
                                 ),
                         ),
                     ),
+                policies =
+                    listOf(
+                        MovieDayDiscount(),
+                        EarlyLateDiscount(),
+                        PointDiscount(0),
+                        PayTypeDiscount(),
+                    ),
             )
         Assertions
             .assertThat(
-                moviePayment.getFinalPrice(payType = PayType.CREDIT_CARD, point = 0),
+                moviePayment.getFinalPrice(payType = PayType.CREDIT_CARD),
             ).isEqualTo(12_350)
     }
 
@@ -242,10 +281,17 @@ class MoviePaymentTest {
                                 ),
                         ),
                     ),
+                policies =
+                    listOf(
+                        MovieDayDiscount(),
+                        EarlyLateDiscount(),
+                        PointDiscount(0),
+                        PayTypeDiscount(),
+                    ),
             )
         Assertions
             .assertThat(
-                moviePayment.getFinalPrice(payType = PayType.CREDIT_CARD, point = 0),
+                moviePayment.getFinalPrice(payType = PayType.CREDIT_CARD),
             ).isEqualTo(12_350)
     }
 
@@ -290,10 +336,17 @@ class MoviePaymentTest {
                                 ),
                         ),
                     ),
+                policies =
+                    listOf(
+                        MovieDayDiscount(),
+                        EarlyLateDiscount(),
+                        PointDiscount(0),
+                        PayTypeDiscount(),
+                    ),
             )
         Assertions
             .assertThat(
-                moviePayment.getFinalPrice(payType = PayType.CREDIT_CARD, point = 0),
+                moviePayment.getFinalPrice(payType = PayType.CREDIT_CARD),
             ).isEqualTo(27_075)
     }
 }
