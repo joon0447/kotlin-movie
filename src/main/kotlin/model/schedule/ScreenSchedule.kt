@@ -10,12 +10,24 @@ class ScreenSchedule(
     private val movieScreenings: List<MovieScreening>,
 ) {
     init {
-        require(movieScreenings.all { isContainServicePeriod(it.screenTime.start) }) { "상영관의 운영 시작 시간보다 일찍 영화를 배정할 수 없습니다." }
-        require(movieScreenings.all { isContainServicePeriod(it.screenTime.end) }) { "상영관의 운영 종료 시간보다 늦게 영화를 배정할 수 없습니다." }
+        val startOutOfRange =
+            movieScreenings.firstOrNull {
+                !isContainServicePeriod(it.screenTime.start)
+            }
+        val endOutOfRange =
+            movieScreenings.firstOrNull {
+                !isContainServicePeriod(it.screenTime.end)
+            }
+        require(startOutOfRange == null) {
+            "상영관 $screenId 에서 운영 시간($servicePeriod)보다 일찍 배정된 영화가 있습니다. - ${startOutOfRange?.movie?.name} : ${startOutOfRange?.screenTime?.start} - ${startOutOfRange?.screenTime?.end}"
+        }
+        require(endOutOfRange == null) {
+            "상영관 $screenId 에서 운영 시간($servicePeriod)보다 늦게 배정된 영화가 있습니다. - ${endOutOfRange?.movie?.name} : ${endOutOfRange?.screenTime?.start} - ${endOutOfRange?.screenTime?.end}"
+        }
         movieScreenings.forEachIndexed { index, current ->
             movieScreenings.drop(index + 1).forEach { other ->
                 require(!current.screenTime.overlaps(other.screenTime)) {
-                    "상영 시간이 겹칩니다: ${current.screenTime} / ${other.screenTime}"
+                    "상영관 $screenId 의 상영 시간이 겹칩니다: 영화 - ${current.movie.name} ${current.screenTime} / ${other.movie.name} ${other.screenTime}"
                 }
             }
         }
