@@ -1,6 +1,6 @@
 package model.schedule
 
-import model.movie.MovieId
+import model.movie.Movie
 
 class CinemaSchedule(
     screenSchedules: List<ScreenSchedule>,
@@ -11,5 +11,5 @@ class CinemaSchedule(
         require(screenSchedules.distinct().size == screenSchedules.size)
     }
 
-    fun getMovieScreenings(movieId: MovieId): List<MovieScreening> = screenSchedules.flatMap { it.screeningOf(movieId) }
+    fun getMovieScreenings(movie: Movie): List<MovieScreening> = screenSchedules.flatMap { it.screeningOf(movie) }
 }

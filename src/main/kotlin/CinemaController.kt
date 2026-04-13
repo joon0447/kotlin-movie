@@ -56,7 +56,7 @@ class CinemaController(
         }
     }
 
-    private fun getMovieSchedule(movie: Movie): List<MovieScreening> = cinemaKiosk.cinemaSchedule.getMovieScreenings(movie.id)
+    private fun getMovieSchedule(movie: Movie): List<MovieScreening> = cinemaKiosk.cinemaSchedule.getMovieScreenings(movie)
 
     private fun selectDate(): CinemaTime {
         while (true) {

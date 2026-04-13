@@ -1,6 +1,7 @@
 package model.movie
 
 import model.CinemaTimeRange
+import java.util.Objects
 
 class Movie(
     val name: MovieName,
@@ -9,14 +10,12 @@ class Movie(
 ) {
     fun isSameDuration(cinemaTimeRange: CinemaTimeRange): Boolean = runningTime.isSameDuration(cinemaTimeRange)
 
-    fun isEqualId(movieId: MovieId): Boolean = id == movieId
-
     override fun equals(other: Any?): Boolean {
         if (other is Movie) {
-            return this.id == other.id
+            return this.id == other.id && this.name == other.name
         }
         return false
     }
 
-    override fun hashCode(): Int = id.hashCode()
+    override fun hashCode(): Int = Objects.hash(id, name)
 }

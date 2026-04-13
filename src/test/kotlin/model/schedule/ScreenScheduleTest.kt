@@ -178,7 +178,7 @@ class ScreenScheduleTest {
                         CinemaTime(LocalDateTime.of(2026, 4, 7, 22, 0)),
                     ),
                 movieScreenings = movieScreenings,
-            ).screeningOf(movie.id),
+            ).screeningOf(movie),
         ).isEqualTo(movieScreenings)
     }
 
