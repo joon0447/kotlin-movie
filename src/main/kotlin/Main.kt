@@ -10,6 +10,6 @@ fun main() {
     val cinemaSchedule = CinemaSchedule(screenSchedules = screenSchedules)
     CinemaController(
         cinemaKiosk = CinemaKiosk(cinemaSchedule),
-        movieCatalog = CinemaData.initMovieCatalog(),
+        currentShowingMovie = CinemaData.initMovieCatalog(),
     ).run()
 }

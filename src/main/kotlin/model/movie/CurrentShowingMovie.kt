@@ -1,6 +1,6 @@
 package model.movie
 
-class MovieCatalog(
+class CurrentShowingMovie(
     movies: List<Movie>,
 ) {
     private val movies = movies.toList()

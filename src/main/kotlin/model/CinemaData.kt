@@ -1,7 +1,7 @@
 package model
 
 import model.movie.Movie
-import model.movie.MovieCatalog
+import model.movie.CurrentShowingMovie
 import model.movie.MovieId
 import model.movie.MovieName
 import model.movie.RunningTime
@@ -22,8 +22,8 @@ object CinemaData {
     val movieId1 = Uuid.generateV7()
     val movieId2 = Uuid.generateV7()
 
-    fun initMovieCatalog(): MovieCatalog =
-        MovieCatalog(
+    fun initMovieCatalog(): CurrentShowingMovie =
+        CurrentShowingMovie(
             movies =
                 listOf(
                     Movie(
