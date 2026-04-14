@@ -23,7 +23,7 @@ class CinemaKiosk(
         }
 
         val seat = movieScreening.getSeat(seatRow, seatColumn) ?: return MovieReservationResult.Failed
-        if (seat.reserve()) {
+        if (movieScreening.reserve(seat)) {
             val result =
                 MovieReservationResult.Success(
                     movie = movieScreening.movie,
@@ -41,7 +41,8 @@ class CinemaKiosk(
         positions: List<Pair<SeatRow, SeatColumn>>,
     ) {
         positions.forEach { (seatRow, seatColumn) ->
-            movieScreening.getSeat(seatRow, seatColumn)?.cancelReservation()
+            val seat = movieScreening.getSeat(seatRow, seatColumn) ?: return@forEach
+            movieScreening.cancel(seat)
         }
     }
 

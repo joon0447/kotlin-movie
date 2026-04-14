@@ -12,7 +12,6 @@ import model.seat.SeatColumn
 import model.seat.SeatGrade
 import model.seat.SeatGroup
 import model.seat.SeatRow
-import model.seat.SeatState
 import java.time.LocalDateTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -68,25 +67,21 @@ object CinemaData {
                                         Seat(
                                             row = SeatRow("B"),
                                             column = SeatColumn(2),
-                                            state = SeatState.AVAILABLE,
                                             grade = SeatGrade.S,
                                         ),
                                         Seat(
                                             row = SeatRow("B"),
                                             column = SeatColumn(1),
-                                            state = SeatState.AVAILABLE,
                                             grade = SeatGrade.B,
                                         ),
                                         Seat(
                                             row = SeatRow("A"),
                                             column = SeatColumn(2),
-                                            state = SeatState.AVAILABLE,
                                             grade = SeatGrade.B,
                                         ),
                                         Seat(
                                             row = SeatRow("A"),
                                             column = SeatColumn(1),
-                                            state = SeatState.AVAILABLE,
                                             grade = SeatGrade.S,
                                         ),
                                     ),
@@ -110,25 +105,21 @@ object CinemaData {
                                         Seat(
                                             row = SeatRow("B"),
                                             column = SeatColumn(2),
-                                            state = SeatState.AVAILABLE,
                                             grade = SeatGrade.S,
                                         ),
                                         Seat(
                                             row = SeatRow("B"),
                                             column = SeatColumn(1),
-                                            state = SeatState.AVAILABLE,
                                             grade = SeatGrade.B,
                                         ),
                                         Seat(
                                             row = SeatRow("A"),
                                             column = SeatColumn(2),
-                                            state = SeatState.AVAILABLE,
                                             grade = SeatGrade.B,
                                         ),
                                         Seat(
                                             row = SeatRow("A"),
                                             column = SeatColumn(1),
-                                            state = SeatState.AVAILABLE,
                                             grade = SeatGrade.S,
                                         ),
                                     ),
@@ -152,25 +143,21 @@ object CinemaData {
                                         Seat(
                                             row = SeatRow("B"),
                                             column = SeatColumn(2),
-                                            state = SeatState.AVAILABLE,
                                             grade = SeatGrade.S,
                                         ),
                                         Seat(
                                             row = SeatRow("B"),
                                             column = SeatColumn(1),
-                                            state = SeatState.AVAILABLE,
                                             grade = SeatGrade.B,
                                         ),
                                         Seat(
                                             row = SeatRow("A"),
                                             column = SeatColumn(2),
-                                            state = SeatState.AVAILABLE,
                                             grade = SeatGrade.B,
                                         ),
                                         Seat(
                                             row = SeatRow("A"),
                                             column = SeatColumn(1),
-                                            state = SeatState.AVAILABLE,
                                             grade = SeatGrade.S,
                                         ),
                                     ),
@@ -194,25 +181,21 @@ object CinemaData {
                                         Seat(
                                             row = SeatRow("B"),
                                             column = SeatColumn(2),
-                                            state = SeatState.AVAILABLE,
                                             grade = SeatGrade.S,
                                         ),
                                         Seat(
                                             row = SeatRow("B"),
                                             column = SeatColumn(1),
-                                            state = SeatState.AVAILABLE,
                                             grade = SeatGrade.B,
                                         ),
                                         Seat(
                                             row = SeatRow("A"),
                                             column = SeatColumn(2),
-                                            state = SeatState.AVAILABLE,
                                             grade = SeatGrade.B,
                                         ),
                                         Seat(
                                             row = SeatRow("A"),
                                             column = SeatColumn(1),
-                                            state = SeatState.AVAILABLE,
                                             grade = SeatGrade.S,
                                         ),
                                     ),
@@ -247,25 +230,21 @@ object CinemaData {
                                         Seat(
                                             row = SeatRow("B"),
                                             column = SeatColumn(2),
-                                            state = SeatState.AVAILABLE,
                                             grade = SeatGrade.S,
                                         ),
                                         Seat(
                                             row = SeatRow("B"),
                                             column = SeatColumn(1),
-                                            state = SeatState.AVAILABLE,
                                             grade = SeatGrade.B,
                                         ),
                                         Seat(
                                             row = SeatRow("A"),
                                             column = SeatColumn(2),
-                                            state = SeatState.AVAILABLE,
                                             grade = SeatGrade.B,
                                         ),
                                         Seat(
                                             row = SeatRow("A"),
                                             column = SeatColumn(1),
-                                            state = SeatState.AVAILABLE,
                                             grade = SeatGrade.S,
                                         ),
                                     ),
@@ -289,25 +268,21 @@ object CinemaData {
                                         Seat(
                                             row = SeatRow("B"),
                                             column = SeatColumn(2),
-                                            state = SeatState.AVAILABLE,
                                             grade = SeatGrade.S,
                                         ),
                                         Seat(
                                             row = SeatRow("B"),
                                             column = SeatColumn(1),
-                                            state = SeatState.AVAILABLE,
                                             grade = SeatGrade.B,
                                         ),
                                         Seat(
                                             row = SeatRow("A"),
                                             column = SeatColumn(2),
-                                            state = SeatState.AVAILABLE,
                                             grade = SeatGrade.B,
                                         ),
                                         Seat(
                                             row = SeatRow("A"),
                                             column = SeatColumn(1),
-                                            state = SeatState.AVAILABLE,
                                             grade = SeatGrade.S,
                                         ),
                                     ),

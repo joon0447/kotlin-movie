@@ -5,7 +5,6 @@ import java.util.Objects
 class Seat(
     val row: SeatRow,
     val column: SeatColumn,
-    private var state: SeatState,
     val grade: SeatGrade,
 ) : Comparable<Seat> {
     val price: Int =
@@ -14,20 +13,6 @@ class Seat(
             SeatGrade.A -> 15_000
             SeatGrade.B -> 12_000
         }
-
-    fun reserve(): Boolean {
-        if (state == SeatState.AVAILABLE) {
-            state = SeatState.RESERVED
-            return true
-        }
-        return false
-    }
-
-    fun cancelReservation() {
-        if (state == SeatState.RESERVED) {
-            state = SeatState.AVAILABLE
-        }
-    }
 
     override fun equals(other: Any?): Boolean {
         if (other is Seat) {

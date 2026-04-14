@@ -14,7 +14,6 @@ import model.seat.SeatColumn
 import model.seat.SeatGrade
 import model.seat.SeatGroup
 import model.seat.SeatRow
-import model.seat.SeatState
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -75,7 +74,6 @@ class CinemaKioskTest {
                                             Seat(
                                                 row = SeatRow("A"),
                                                 column = SeatColumn(2),
-                                                state = SeatState.AVAILABLE,
                                                 grade = SeatGrade.A,
                                             ),
                                         ),
@@ -105,7 +103,6 @@ class CinemaKioskTest {
                                             Seat(
                                                 row = SeatRow("A"),
                                                 column = SeatColumn(2),
-                                                state = SeatState.AVAILABLE,
                                                 grade = SeatGrade.A,
                                             ),
                                         ),
@@ -137,7 +134,6 @@ class CinemaKioskTest {
                             Seat(
                                 row = SeatRow("A"),
                                 column = SeatColumn(2),
-                                state = SeatState.AVAILABLE,
                                 grade = SeatGrade.A,
                             ),
                         ),
@@ -162,7 +158,6 @@ class CinemaKioskTest {
                                 Seat(
                                     row = SeatRow("A"),
                                     column = SeatColumn(2),
-                                    state = SeatState.AVAILABLE,
                                     grade = SeatGrade.A,
                                 ),
                             ),
@@ -200,13 +195,11 @@ class CinemaKioskTest {
                                             Seat(
                                                 row = SeatRow("A"),
                                                 column = SeatColumn(1),
-                                                state = SeatState.AVAILABLE,
                                                 grade = SeatGrade.A,
                                             ),
                                             Seat(
                                                 row = SeatRow("A"),
                                                 column = SeatColumn(2),
-                                                state = SeatState.AVAILABLE,
                                                 grade = SeatGrade.A,
                                             ),
                                         ),
@@ -223,21 +216,5 @@ class CinemaKioskTest {
                         screenSchedules = screenSchedules,
                     ),
             )
-
-//        cinemaKiosk.reserve(
-//            movieName = MovieName("혼자사는남자"),
-//            startTime = CinemaTime(LocalDateTime.of(2026, 4, 8, 11, 0)),
-//            seatRow = SeatRow("A"),
-//            seatColumn = SeatColumn(1),
-//        )
-//
-//        assertThat(
-//            cinemaKiosk.reserve(
-//                movieName = MovieName("혼자사는남자"),
-//                startTime = CinemaTime(LocalDateTime.of(2026, 4, 8, 11, 0)),
-//                seatRow = SeatRow("A"),
-//                seatColumn = SeatColumn(2),
-//            ),
-//        ).isNotEqualTo(MovieReservationResult.Failed)
     }
 }

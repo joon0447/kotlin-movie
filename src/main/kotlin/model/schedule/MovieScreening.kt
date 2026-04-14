@@ -13,6 +13,8 @@ class MovieScreening(
     val screenTime: CinemaTimeRange,
     val seatGroup: SeatGroup,
 ) {
+    private val reservedSeats: MutableSet<Seat> = mutableSetOf()
+
     init {
         require(movie.isSameDuration(screenTime)) { "영화의 러닝타임과 상영관의 상영 시간이 일치하지 않습니다." }
     }
@@ -21,6 +23,15 @@ class MovieScreening(
         seatRow: SeatRow,
         seatColumn: SeatColumn,
     ): Seat? = seatGroup.getSeat(seatRow, seatColumn)
+
+    fun reserve(seat: Seat): Boolean {
+        if (seat !in seatGroup) return false
+        return reservedSeats.add(seat)
+    }
+
+    fun cancel(seat: Seat) {
+        reservedSeats.remove(seat)
+    }
 
     override fun equals(other: Any?): Boolean {
         if (other is MovieScreening) {
