@@ -1,7 +1,7 @@
 package model
 
-import model.movie.Movie
 import model.movie.CurrentShowingMovie
+import model.movie.Movie
 import model.movie.MovieId
 import model.movie.MovieName
 import model.movie.RunningTime

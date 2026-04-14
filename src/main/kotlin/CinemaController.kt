@@ -1,8 +1,8 @@
 import model.CinemaKiosk
 import model.CinemaTime
 import model.MovieReservationResult
-import model.movie.Movie
 import model.movie.CurrentShowingMovie
+import model.movie.Movie
 import model.payment.MoviePayment
 import model.payment.PayType
 import model.payment.policy.EarlyLateDiscount
