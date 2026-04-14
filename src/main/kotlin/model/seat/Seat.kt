@@ -29,11 +29,6 @@ class Seat(
         }
     }
 
-    fun isSameSeat(
-        row: SeatRow,
-        column: SeatColumn,
-    ): Boolean = this.row == row && this.column == column
-
     override fun equals(other: Any?): Boolean {
         if (other is Seat) {
             return row == other.row && column == other.column
