@@ -4,10 +4,10 @@ import model.movie.CurrentShowingMovie
 import model.movie.Movie
 import model.payment.MoviePayment
 import model.payment.PayType
-import model.payment.policy.EarlyLateDiscount
-import model.payment.policy.MovieDayDiscount
-import model.payment.policy.PayTypeDiscount
-import model.payment.policy.PointDiscount
+import model.payment.policy.discount.EarlyLateDiscount
+import model.payment.policy.discount.MovieDayDiscount
+import model.payment.policy.discount.PayTypeDiscount
+import model.payment.policy.discount.PointDiscount
 import model.reservation.MovieReservationResult
 import model.schedule.MovieScreening
 import model.schedule.onDate

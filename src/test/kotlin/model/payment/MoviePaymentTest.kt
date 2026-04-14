@@ -3,10 +3,10 @@ package model.payment
 import model.CinemaTime
 import model.CinemaTimeRange
 import model.fixture.MovieFixture
-import model.payment.policy.EarlyLateDiscount
-import model.payment.policy.MovieDayDiscount
-import model.payment.policy.PayTypeDiscount
-import model.payment.policy.PointDiscount
+import model.payment.policy.discount.EarlyLateDiscount
+import model.payment.policy.discount.MovieDayDiscount
+import model.payment.policy.discount.PayTypeDiscount
+import model.payment.policy.discount.PointDiscount
 import model.reservation.MovieReservationResult
 import model.seat.Seat
 import model.seat.SeatColumn

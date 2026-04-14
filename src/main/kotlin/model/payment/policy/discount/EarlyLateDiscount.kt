@@ -1,6 +1,5 @@
-package model.payment.policy
+package model.payment.policy.discount
 
-import model.payment.DiscountPolicy
 import model.payment.PayType
 import model.reservation.MovieReservationResult
 import java.time.LocalTime

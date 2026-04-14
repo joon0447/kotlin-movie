@@ -7,13 +7,6 @@ class Seat(
     val column: SeatColumn,
     val grade: SeatGrade,
 ) : Comparable<Seat> {
-    val price: Int =
-        when (grade) {
-            SeatGrade.S -> 18_000
-            SeatGrade.A -> 15_000
-            SeatGrade.B -> 12_000
-        }
-
     override fun equals(other: Any?): Boolean {
         if (other is Seat) {
             return row == other.row && column == other.column
