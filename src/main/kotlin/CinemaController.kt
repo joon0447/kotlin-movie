@@ -2,7 +2,7 @@ import model.CinemaKiosk
 import model.CinemaTime
 import model.MovieReservationResult
 import model.movie.Movie
-import model.movie.MovieCatalog
+import model.movie.NowShowingMovies
 import model.payment.MoviePayment
 import model.payment.PayType
 import model.payment.policy.EarlyLateDiscount
@@ -16,13 +16,13 @@ import view.OutputView
 
 class CinemaController(
     val cinemaKiosk: CinemaKiosk,
-    val movieCatalog: MovieCatalog,
+    val nowShowingMovies: NowShowingMovies,
 ) {
     fun run() {
         if (startReservation().not()) return
         do {
             // 영화 예매
-            val selectedMovie = selectMovie(movieCatalog)
+            val selectedMovie = selectMovie(nowShowingMovies)
             val movieScreening = getMovieSchedule(selectedMovie)
 
             // 날짜 선택하고 해당 날짜의 상영 일정 중 선택
@@ -40,10 +40,10 @@ class CinemaController(
 
     private fun startReservation(): Boolean = InputView.askStartReservation()
 
-    private fun selectMovie(movieCatalog: MovieCatalog): Movie {
+    private fun selectMovie(nowShowingMovies: NowShowingMovies): Movie {
         while (true) {
             val input = InputView.inputMovieName()
-            val movie = movieCatalog.findByName(input)
+            val movie = nowShowingMovies.findByName(input)
             if (movie != null) return movie
             OutputView.showInvalidMovieName()
         }
