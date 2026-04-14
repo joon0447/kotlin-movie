@@ -7,6 +7,7 @@ object Message {
     const val SELECT_MOVIE_SCREENING = "상영 번호를 선택하세요:"
     const val SEAT_GROUP = "좌석 배치도"
     const val INVALID_SEAT = "해당 좌석은 예매할 수 없습니다."
+    const val EMPTY_MOVIE_NAME = "영화 이름은 비어있을 수 없습니다."
     const val NO_EXIST_SEAT = "존재하지 않는 좌석입니다."
     const val SHOW_RESERVATION_INFO = "장바구니에 추가됨"
     const val INPUT_CONTINUE = "다른 영화를 추가하시겠습니까? (Y/N)"
