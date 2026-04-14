@@ -1,6 +1,6 @@
 package model.payment
 
-import model.MovieReservationResult
+import model.reservation.MovieReservationResult
 
 class MoviePayment(
     val reservations: List<MovieReservationResult.Success>,

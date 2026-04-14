@@ -1,6 +1,5 @@
 import model.CinemaKiosk
 import model.CinemaTime
-import model.MovieReservationResult
 import model.movie.CurrentShowingMovie
 import model.movie.Movie
 import model.payment.MoviePayment
@@ -9,6 +8,7 @@ import model.payment.policy.EarlyLateDiscount
 import model.payment.policy.MovieDayDiscount
 import model.payment.policy.PayTypeDiscount
 import model.payment.policy.PointDiscount
+import model.reservation.MovieReservationResult
 import model.schedule.MovieScreening
 import model.schedule.onDate
 import view.InputView

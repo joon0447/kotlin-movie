@@ -1,8 +1,8 @@
 package model.payment.policy
 
-import model.MovieReservationResult
 import model.payment.DiscountPolicy
 import model.payment.PayType
+import model.reservation.MovieReservationResult
 import java.time.LocalTime
 
 class EarlyLateDiscount : DiscountPolicy {

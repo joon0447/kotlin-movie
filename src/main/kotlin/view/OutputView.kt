@@ -1,6 +1,6 @@
 package view
 
-import model.MovieReservationResult
+import model.reservation.MovieReservationResult
 import model.schedule.MovieScreening
 
 object OutputView {

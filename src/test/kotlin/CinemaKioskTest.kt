@@ -1,11 +1,11 @@
 import model.CinemaKiosk
 import model.CinemaTime
 import model.CinemaTimeRange
-import model.MovieReservationResult
 import model.movie.Movie
 import model.movie.MovieId
 import model.movie.MovieName
 import model.movie.RunningTime
+import model.reservation.MovieReservationResult
 import model.schedule.CinemaSchedule
 import model.schedule.MovieScreening
 import model.schedule.ScreenSchedule

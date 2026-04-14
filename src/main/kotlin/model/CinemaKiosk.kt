@@ -1,5 +1,7 @@
 package model
 
+import model.reservation.MovieReservationResult
+import model.reservation.Reservations
 import model.schedule.CinemaSchedule
 import model.schedule.MovieScreening
 import model.seat.SeatColumn
@@ -8,23 +10,19 @@ import model.seat.SeatRow
 class CinemaKiosk(
     val cinemaSchedule: CinemaSchedule,
 ) {
-    private val _reserveResults: MutableList<MovieReservationResult.Success> = mutableListOf()
-    val reserveResults: List<MovieReservationResult.Success> get() = _reserveResults.toList()
+    private val reservations = Reservations()
+    val reserveResults: List<MovieReservationResult.Success> get() = reservations.all
 
     fun reserve(
         movieScreening: MovieScreening,
         seatRow: SeatRow,
         seatColumn: SeatColumn,
     ): MovieReservationResult {
-        val seat = movieScreening.getSeat(seatRow, seatColumn) ?: return MovieReservationResult.Failed
-        if (_reserveResults.any {
-                it.screenTime != movieScreening.screenTime &&
-                    it.screenTime.overlaps(movieScreening.screenTime)
-            }
-        ) {
+        if (!reservations.canAccept(movieScreening)) {
             return MovieReservationResult.Failed
         }
 
+        val seat = movieScreening.getSeat(seatRow, seatColumn) ?: return MovieReservationResult.Failed
         if (seat.reserve()) {
             val result =
                 MovieReservationResult.Success(
@@ -32,7 +30,7 @@ class CinemaKiosk(
                     screenTime = movieScreening.screenTime,
                     seat = seat,
                 )
-            _reserveResults.add(result)
+            reservations.add(result)
             return result
         }
         return MovieReservationResult.Failed
