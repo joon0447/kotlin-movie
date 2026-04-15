@@ -38,7 +38,15 @@ class CinemaController(
         OutputView.end()
     }
 
-    private fun startReservation(): Boolean = InputView.askStartReservation()
+    private fun startReservation(): Boolean {
+        while (true) {
+            try {
+                return InputView.askStartReservation()
+            } catch (e: IllegalArgumentException) {
+                OutputView.showErrorMessage(e.message)
+            }
+        }
+    }
 
     private fun selectMovie(currentShowingMovie: CurrentShowingMovie): Movie {
         while (true) {
