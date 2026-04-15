@@ -4,16 +4,17 @@ import java.sql.Connection
 import java.sql.DriverManager
 
 object Database {
-    private const val URL = "jdbc:h2:./data/cinema;DB_CLOSE_DELAY=-1"
+    private const val DEFAULT_URL = "jdbc:h2:./data/cinema;DB_CLOSE_DELAY=-1"
 
-    fun init() {
+    fun init(url: String = DEFAULT_URL) {
         val schema = loadSchema()
-        connection().use { connection ->
+        connection(url).use { connection ->
             connection.createStatement().use { it.execute(schema) }
         }
+        DataInitializer.initializeIfEmpty()
     }
 
-    fun connection(): Connection = DriverManager.getConnection(URL, "sa", "")
+    fun connection(url: String = DEFAULT_URL): Connection = DriverManager.getConnection(url, "sa", "")
 
     private fun loadSchema(): String {
         val stream =
