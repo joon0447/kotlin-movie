@@ -1,7 +1,9 @@
 package model.schedule
 
+import model.CinemaTime
 import model.CinemaTimeRange
 import model.movie.Movie
+import model.reservation.MovieReservationResult
 import model.seat.Seat
 import model.seat.SeatColumn
 import model.seat.SeatGroup
@@ -9,7 +11,7 @@ import model.seat.SeatRow
 import java.util.Objects
 
 class MovieScreening(
-    val movie: Movie,
+    private val movie: Movie,
     val screenTime: CinemaTimeRange,
     val seatGroup: SeatGroup,
 ) {
@@ -24,14 +26,35 @@ class MovieScreening(
         seatColumn: SeatColumn,
     ): Seat? = seatGroup.getSeat(seatRow, seatColumn)
 
-    fun reserve(seat: Seat): Boolean {
-        if (seat !in seatGroup) return false
-        return reservedSeats.add(seat)
+    fun reserve(
+        seatRow: SeatRow,
+        seatColumn: SeatColumn,
+    ): MovieReservationResult {
+        val seat = seatGroup.getSeat(seatRow, seatColumn) ?: return MovieReservationResult.Failed
+        if (!reservedSeats.add(seat)) return MovieReservationResult.Failed
+        return MovieReservationResult.Success(movie, screenTime, seat)
     }
 
-    fun cancel(seat: Seat) {
+    fun cancel(
+        seatRow: SeatRow,
+        seatColumn: SeatColumn,
+    ) {
+        val seat = seatGroup.getSeat(seatRow, seatColumn) ?: return
         reservedSeats.remove(seat)
     }
+
+    fun conflictsWith(other: MovieReservationResult.Success): Boolean =
+        screenTime != other.screenTime && screenTime.overlaps(other.screenTime)
+
+    fun isOnDate(date: CinemaTime): Boolean = screenTime.start.isEqualDate(date)
+
+    fun isWithin(period: CinemaTimeRange): Boolean = period.contains(screenTime.start) && period.contains(screenTime.end)
+
+    fun overlaps(other: MovieScreening): Boolean = screenTime.overlaps(other.screenTime)
+
+    fun isSameMovie(movie: Movie): Boolean = this.movie == movie
+
+    override fun toString(): String = "$movie $screenTime"
 
     override fun equals(other: Any?): Boolean {
         if (other is MovieScreening) {

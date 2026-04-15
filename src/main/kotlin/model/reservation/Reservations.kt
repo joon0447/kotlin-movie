@@ -7,7 +7,7 @@ class Reservations(
 ) {
     val all: List<MovieReservationResult.Success> get() = items.toList()
 
-    fun canAccept(screening: MovieScreening): Boolean = items.none { it.conflictsWith(screening) }
+    fun canAccept(screening: MovieScreening): Boolean = items.none { screening.conflictsWith(it) }
 
     fun add(reservation: MovieReservationResult.Success) {
         items.add(reservation)

@@ -4,6 +4,7 @@ import model.CinemaTime
 import model.CinemaTimeRange
 import model.fixture.MovieFixture
 import model.movie.RunningTime
+import model.reservation.MovieReservationResult
 import model.seat.Seat
 import model.seat.SeatColumn
 import model.seat.SeatGrade
@@ -78,20 +79,22 @@ class MovieScreeningTest {
     @Test
     fun `예약되지 않은 좌석을 예약하면 예약할 수 있다`() {
         val seat = Seat(row = SeatRow("A"), column = SeatColumn(1), grade = SeatGrade.S)
+        val screenTime =
+            CinemaTimeRange(
+                start = CinemaTime(LocalDateTime.of(2026, 4, 8, 16, 0)),
+                end = CinemaTime(LocalDateTime.of(2026, 4, 8, 17, 0)),
+            )
         assertThat(
             MovieScreening(
                 movie = movie,
                 screenTime =
-                    CinemaTimeRange(
-                        start = CinemaTime(LocalDateTime.of(2026, 4, 8, 16, 0)),
-                        end = CinemaTime(LocalDateTime.of(2026, 4, 8, 17, 0)),
-                    ),
+                screenTime,
                 seatGroup =
                     SeatGroup(
                         listOf(seat),
                     ),
-            ).reserve(seat),
-        ).isTrue
+            ).reserve(SeatRow("A"), SeatColumn(1)),
+        ).isEqualTo(MovieReservationResult.Success(movie, screenTime, seat))
     }
 
     @Test
@@ -110,32 +113,39 @@ class MovieScreeningTest {
                         listOf(seat),
                     ),
             )
-        movieScreening.reserve(seat)
+        movieScreening.reserve(SeatRow("A"), SeatColumn(1))
         assertThat(
-            movieScreening.reserve(seat),
-        ).isFalse
+            movieScreening.reserve(SeatRow("A"), SeatColumn(1)),
+        ).isEqualTo(MovieReservationResult.Failed)
     }
 
     @Test
     fun `이미 예약된 좌석을 취소하고 예약하면 예약할 수 있다 `() {
         val seat = Seat(row = SeatRow("A"), column = SeatColumn(1), grade = SeatGrade.S)
+        val screenTime =
+            CinemaTimeRange(
+                start = CinemaTime(LocalDateTime.of(2026, 4, 8, 16, 0)),
+                end = CinemaTime(LocalDateTime.of(2026, 4, 8, 17, 0)),
+            )
         val movieScreening =
             MovieScreening(
                 movie = movie,
-                screenTime =
-                    CinemaTimeRange(
-                        start = CinemaTime(LocalDateTime.of(2026, 4, 8, 16, 0)),
-                        end = CinemaTime(LocalDateTime.of(2026, 4, 8, 17, 0)),
-                    ),
+                screenTime = screenTime,
                 seatGroup =
                     SeatGroup(
                         listOf(seat),
                     ),
             )
-        movieScreening.reserve(seat)
-        movieScreening.cancel(seat)
+        movieScreening.reserve(SeatRow("A"), SeatColumn(1))
+        movieScreening.cancel(SeatRow("A"), SeatColumn(1))
         assertThat(
-            movieScreening.reserve(seat),
-        ).isTrue
+            movieScreening.reserve(SeatRow("A"), SeatColumn(1)),
+        ).isEqualTo(
+            MovieReservationResult.Success(
+                movie,
+                screenTime,
+                seat,
+            ),
+        )
     }
 }
