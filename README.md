@@ -8,6 +8,8 @@
 - [x] 영화 상영 정보를 데이터베이스에 저장한다
   - movie_screening 테이블
   - id, movie_id, screen_start, screen_end
+- [x] 데이터베이스로부터 영화 정보 가져오기
+- [x] 데이터베이스로부터 영화 상영 정보 가져오기
 - [ ] 예매 정보를 데이터베이스에 저장한다
   - reservation 테이블
   - id, screening_id, seat_row, seat_column, seat_grade, price, created_at
