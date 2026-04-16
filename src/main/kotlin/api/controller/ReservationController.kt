@@ -36,15 +36,24 @@ class ReservationController {
         request.reservations.forEach { item ->
             val screening =
                 movieScreeningRepository.findByScreeningId(item.screeningId)
-                    ?: throw IllegalArgumentException("상영 정보를 찾을 수 없습니다: ${item.screeningId}")
+                    ?: run {
+                        reservationRepository.delete(reservationId)
+                        return ResponseEntity.badRequest().build()
+                    }
 
             item.seats.forEach { seat ->
                 val row = SeatRow(seat.substring(0, 1))
                 val col = SeatColumn(seat.substring(1).toInt())
                 val result = screening.reserve(row, col)
-                if (result is MovieReservationResult.Success) {
-                    reservationRepository.saveSeat(reservationId, item.screeningId, result.seat)
-                    allResults += result
+                when (result) {
+                    is MovieReservationResult.Success -> {
+                        reservationRepository.saveSeat(reservationId, item.screeningId, result.seat)
+                        allResults += result
+                    }
+                    is MovieReservationResult.Failed -> {
+                        reservationRepository.delete(reservationId)
+                        return ResponseEntity.badRequest().build()
+                    }
                 }
             }
         }
