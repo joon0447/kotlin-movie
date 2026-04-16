@@ -126,21 +126,23 @@ class CinemaController(
                     )
                 val finalPrice = moviePayment.getFinalPrice(payType)
                 OutputView.showTotalPrice(finalPrice)
-                askPaymentConfirm(finalPrice, point)
+                val isConfirm = askPaymentConfirm(finalPrice, point)
 
-                cinemaKiosk.reserveResults.forEach { result ->
-                    val screeningId =
-                        screeningRepository.findScreeningId(
-                            name = result.movie.toString(),
-                            screenStart = result.screenTime.start.format("yyyy-MM-dd'T'HH:mm"),
+                if (isConfirm) {
+                    cinemaKiosk.reserveResults.forEach { result ->
+                        val screeningId =
+                            screeningRepository.findScreeningId(
+                                name = result.movie.toString(),
+                                screenStart = result.screenTime.start.format("yyyy-MM-dd'T'HH:mm"),
+                            )
+                        reservationRepository.updatePayment(
+                            screeningId = screeningId!!,
+                            seat = result.seat,
+                            totalPrice = finalPrice,
+                            usedPoint = point,
+                            payType = payType,
                         )
-                    reservationRepository.updatePayment(
-                        screeningId = screeningId!!,
-                        seat = result.seat,
-                        totalPrice = finalPrice,
-                        usedPoint = point,
-                        payType = payType,
-                    )
+                    }
                 }
                 return
             } catch (e: IllegalArgumentException) {
@@ -152,13 +154,23 @@ class CinemaController(
     private fun askPaymentConfirm(
         finalPrice: Int,
         point: Int,
-    ) {
+    ): Boolean {
         if (InputView.askPaymentConfirm()) {
             OutputView.totalReservation(
                 successResults = cinemaKiosk.reserveResults,
                 price = finalPrice,
                 point = point,
             )
+            return true
         }
+
+        cinemaKiosk.reserveResults.forEach { result ->
+            val screeningId = screeningRepository.findScreeningId(
+                name = result.movie.toString(),
+                screenStart = result.screenTime.start.format("yyyy-MM-dd'T'HH:mm"),
+            )
+            reservationRepository.delete(screeningId!!, result.seat.row, result.seat.column)
+        }
+        return false
     }
 }
