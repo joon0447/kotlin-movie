@@ -2,7 +2,6 @@ package database.repository
 
 import database.Database
 import database.default.DefaultMovies
-import kotlin.collections.plusAssign
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)

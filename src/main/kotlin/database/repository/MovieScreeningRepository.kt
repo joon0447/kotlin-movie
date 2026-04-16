@@ -20,7 +20,9 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
-class MovieScreeningRepository {
+class MovieScreeningRepository(
+    private val reservationRepository: ReservationRepository = ReservationRepository(),
+) {
     fun save() {
         val sql =
             """
@@ -42,6 +44,30 @@ class MovieScreeningRepository {
         }
     }
 
+    fun findScreeningId(
+        name: String,
+        screenStart: String,
+    ): Int? {
+        val sql =
+            """
+            SELECT ms.id
+            FROM movie_screening ms
+            JOIN movie m ON m.id = ms.movie_id
+            WHERE m.name = ? AND ms.screen_start = ?
+            """.trimIndent()
+
+        Database.connection().use { connection ->
+            connection.prepareStatement(sql).use { preparedStatement ->
+                preparedStatement.setString(1, name)
+                preparedStatement.setString(2, screenStart)
+                preparedStatement.executeQuery().use { result ->
+                    if (result.next()) return result.getInt("id")
+                    return null
+                }
+            }
+        }
+    }
+
     fun findScreeningsByMovieName(name: String): List<MovieScreening>? {
         val seatGroup =
             SeatGroup(
@@ -55,7 +81,7 @@ class MovieScreeningRepository {
             )
         val sql =
             """
-            SELECT m.name, m.running_time_minutes, ms.screen_start, ms.screen_end
+            SELECT ms.id AS screening_id, m.name, m.running_time_minutes, ms.screen_start, ms.screen_end
             FROM movie m
             JOIN movie_screening ms ON m.id = ms.movie_id
             WHERE m.name = ?
@@ -67,12 +93,19 @@ class MovieScreeningRepository {
                 preparedStatement.executeQuery().use { result ->
                     val screenings = mutableListOf<MovieScreening>()
                     while (result.next()) {
+                        val screeningId = result.getInt("id")
                         val movie =
                             Movie(
                                 name = MovieName(result.getString("name")),
                                 id = MovieId(Uuid.generateV7()),
                                 runningTime = RunningTime(result.getInt("running_time_minutes")),
                             )
+                        val reserved = reservationRepository.findByScreeningId(screeningId)
+                        val reservedSeatSet =
+                            reserved
+                                .mapNotNull { (row, col) ->
+                                    seatGroup.getSeat(SeatRow(row), SeatColumn(col))
+                                }.toSet()
                         screenings +=
                             MovieScreening(
                                 movie = movie,
@@ -82,6 +115,7 @@ class MovieScreeningRepository {
                                         end = CinemaTime(result.getTimestamp("screen_end").toLocalDateTime()),
                                     ),
                                 seatGroup = seatGroup,
+                                reservedSeats = reservedSeatSet,
                             )
                     }
                     return screenings.ifEmpty { null }

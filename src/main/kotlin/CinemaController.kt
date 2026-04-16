@@ -1,4 +1,5 @@
 import database.repository.MovieScreeningRepository
+import database.repository.ReservationRepository
 import model.CinemaKiosk
 import model.CinemaTime
 import model.payment.MoviePayment
@@ -16,6 +17,7 @@ import view.OutputView
 class CinemaController(
     val cinemaKiosk: CinemaKiosk,
     val screeningRepository: MovieScreeningRepository,
+    val reservationRepository: ReservationRepository,
 ) {
     fun run() {
         if (startReservation().not()) return
@@ -117,6 +119,21 @@ class CinemaController(
                 val finalPrice = moviePayment.getFinalPrice(payType)
                 OutputView.showTotalPrice(finalPrice)
                 askPaymentConfirm(finalPrice, point)
+
+                cinemaKiosk.reserveResults.forEach { result ->
+                    val screeningId =
+                        screeningRepository.findScreeningId(
+                            name = result.movie.toString(),
+                            screenStart = result.screenTime.start.format("yyyy-MM-dd'T'HH:mm"),
+                        )
+                    reservationRepository.save(
+                        screeningId = screeningId!!,
+                        seat = result.seat,
+                        totalPrice = finalPrice,
+                        usedPoint = point,
+                        payType = payType,
+                    )
+                }
                 return
             } catch (e: IllegalArgumentException) {
                 OutputView.showErrorMessage(e.message)

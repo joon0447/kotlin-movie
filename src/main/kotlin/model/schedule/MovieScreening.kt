@@ -14,8 +14,9 @@ class MovieScreening(
     private val movie: Movie,
     val screenTime: CinemaTimeRange,
     val seatGroup: SeatGroup,
+    reservedSeats: Set<Seat> = emptySet(),
 ) {
-    private val reservedSeats: MutableSet<Seat> = mutableSetOf()
+    private val reservedSeats: MutableSet<Seat> = reservedSeats.toMutableSet()
 
     init {
         require(movie.isSameDuration(screenTime)) { "영화의 러닝타임과 상영관의 상영 시간이 일치하지 않습니다." }
