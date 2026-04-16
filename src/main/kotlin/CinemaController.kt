@@ -21,20 +21,20 @@ class CinemaController(
 ) {
     fun run() {
         if (startReservation().not()) return
+        val reservationId = reservationRepository.createReservation()
         do {
             // 영화 예매
             val movieScreening = selectMovieScreenings()
-
             // 날짜 선택하고 해당 날짜의 상영 일정 중 선택
             val selectedDate = selectDate()
             val onDateMovieScreening = movieScreening.onDate(selectedDate)
             OutputView.showMovieScreenings(onDateMovieScreening)
             val selectMovieScreening = selectMovieScreening(onDateMovieScreening)
             OutputView.showMovieSeatGroup(selectMovieScreening)
-            reserveSeats(selectMovieScreening)
+            reserveSeats(selectMovieScreening, reservationId)
         } while (InputView.askReserveMore())
         // 결제
-        processPayment()
+        processPayment(reservationId)
         OutputView.end()
     }
 
@@ -81,7 +81,10 @@ class CinemaController(
         }
     }
 
-    private fun reserveSeats(selectMovieScreening: MovieScreening): List<MovieReservationResult.Success> {
+    private fun reserveSeats(
+        selectMovieScreening: MovieScreening,
+        reservationId: Int,
+    ): List<MovieReservationResult.Success> {
         while (true) {
             try {
                 val selectSeats = InputView.selectSeats()
@@ -96,7 +99,7 @@ class CinemaController(
                             name = reservation.movie.toString(),
                             screenStart = reservation.screenTime.start.format("yyyy-MM-dd'T'HH:mm"),
                         )
-                    reservationRepository.saveHold(screeningId!!, reservation.seat)
+                    reservationRepository.saveSeat(reservationId, screeningId!!, reservation.seat)
                 }
                 OutputView.showReservationInfo(reservations)
                 return reservations
@@ -106,7 +109,7 @@ class CinemaController(
         }
     }
 
-    private fun processPayment() {
+    private fun processPayment(reservationId: Int) {
         while (true) {
             try {
                 OutputView.showShoppingCart(successResults = cinemaKiosk.reserveResults)
@@ -126,23 +129,15 @@ class CinemaController(
                     )
                 val finalPrice = moviePayment.getFinalPrice(payType)
                 OutputView.showTotalPrice(finalPrice)
-                val isConfirm = askPaymentConfirm(finalPrice, point)
+                val isConfirm = askPaymentConfirm(finalPrice, point, reservationId)
 
                 if (isConfirm) {
-                    cinemaKiosk.reserveResults.forEach { result ->
-                        val screeningId =
-                            screeningRepository.findScreeningId(
-                                name = result.movie.toString(),
-                                screenStart = result.screenTime.start.format("yyyy-MM-dd'T'HH:mm"),
-                            )
-                        reservationRepository.updatePayment(
-                            screeningId = screeningId!!,
-                            seat = result.seat,
-                            totalPrice = finalPrice,
-                            usedPoint = point,
-                            payType = payType,
-                        )
-                    }
+                    reservationRepository.updatePayment(
+                        reservationId = reservationId,
+                        totalPrice = finalPrice,
+                        usedPoint = point,
+                        payType = payType,
+                    )
                 }
                 return
             } catch (e: IllegalArgumentException) {
@@ -154,6 +149,7 @@ class CinemaController(
     private fun askPaymentConfirm(
         finalPrice: Int,
         point: Int,
+        reservationId: Int,
     ): Boolean {
         if (InputView.askPaymentConfirm()) {
             OutputView.totalReservation(
@@ -164,13 +160,7 @@ class CinemaController(
             return true
         }
 
-        cinemaKiosk.reserveResults.forEach { result ->
-            val screeningId = screeningRepository.findScreeningId(
-                name = result.movie.toString(),
-                screenStart = result.screenTime.start.format("yyyy-MM-dd'T'HH:mm"),
-            )
-            reservationRepository.delete(screeningId!!, result.seat.row, result.seat.column)
-        }
+        reservationRepository.delete(reservationId)
         return false
     }
 }

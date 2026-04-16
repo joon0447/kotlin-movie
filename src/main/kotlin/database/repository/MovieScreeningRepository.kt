@@ -106,7 +106,9 @@ class MovieScreeningRepository(
                         val reserved = reservationRepository.findByScreeningId(screeningId)
                         val reservedSeatSet =
                             reserved
-                                .mapNotNull { (row, col) ->
+                                .mapNotNull { seat ->
+                                    val row = seat.substring(0, 1)
+                                    val col = seat.substring(1).toInt()
                                     seatGroup.getSeat(SeatRow(row), SeatColumn(col))
                                 }.toSet()
                         screenings +=

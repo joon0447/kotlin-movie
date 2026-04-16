@@ -1,7 +1,5 @@
 package database.repository
 
-import api.dto.MovieResponse
-import api.dto.ScreeningResponse
 import database.Database
 import database.default.DefaultMovies
 import kotlin.uuid.ExperimentalUuidApi

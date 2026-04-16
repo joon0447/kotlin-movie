@@ -3,33 +3,45 @@ package database.repository
 import database.Database
 import model.payment.PayType
 import model.seat.Seat
-import model.seat.SeatColumn
-import model.seat.SeatRow
 
 class ReservationRepository {
-    fun saveHold(
+    fun createReservation(): Int {
+        val sql = "INSERT INTO reservation () VALUES ()"
+
+        Database.connection().use { connection ->
+            connection.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS).use { preparedStatement ->
+                preparedStatement.executeUpdate()
+                preparedStatement.generatedKeys.use { keys ->
+                    keys.next()
+                    return keys.getInt(1)
+                }
+            }
+        }
+    }
+
+    fun saveSeat(
+        reservationId: Int,
         screeningId: Int,
         seat: Seat,
     ) {
         val sql =
             """
-            INSERT INTO reservation (screening_id, seat_row, seat_column)
+            INSERT INTO reservations_seat (reservation_id, screening_id, seat)
             VALUES (?, ?, ?)
             """.trimIndent()
 
         Database.connection().use { connection ->
             connection.prepareStatement(sql).use { preparedStatement ->
-                preparedStatement.setInt(1, screeningId)
-                preparedStatement.setString(2, seat.row.toString())
-                preparedStatement.setInt(3, seat.column.toString().toInt())
+                preparedStatement.setInt(1, reservationId)
+                preparedStatement.setInt(2, screeningId)
+                preparedStatement.setString(3, seat.toString())
                 preparedStatement.executeUpdate()
             }
         }
     }
 
     fun updatePayment(
-        screeningId: Int,
-        seat: Seat,
+        reservationId: Int,
         totalPrice: Int,
         usedPoint: Int,
         payType: PayType,
@@ -38,7 +50,7 @@ class ReservationRepository {
             """
             UPDATE reservation
             SET total_price = ?, used_point = ?, payment_method = ?
-            WHERE screening_id = ? AND seat_row = ? AND seat_column = ?
+            WHERE id = ?
             """.trimIndent()
 
         Database.connection().use { connection ->
@@ -46,19 +58,17 @@ class ReservationRepository {
                 preparedStatement.setInt(1, totalPrice)
                 preparedStatement.setInt(2, usedPoint)
                 preparedStatement.setString(3, payType.name)
-                preparedStatement.setInt(4, screeningId)
-                preparedStatement.setString(5, seat.row.toString())
-                preparedStatement.setInt(6, seat.column.toString().toInt())
+                preparedStatement.setInt(4, reservationId)
                 preparedStatement.executeUpdate()
             }
         }
     }
 
-    fun findByScreeningId(screeningId: Int): List<Pair<String, Int>> {
+    fun findByScreeningId(screeningId: Int): List<String> {
         val sql =
             """
-            SELECT seat_row, seat_column                                                                                                                                                                           
-            FROM reservation
+            SELECT seat                                                                                                                                                                      
+            FROM reservation_seat
             WHERE screening_id = ?
             """.trimIndent()
 
@@ -66,9 +76,9 @@ class ReservationRepository {
             connection.prepareStatement(sql).use { preparedStatement ->
                 preparedStatement.setInt(1, screeningId)
                 preparedStatement.executeQuery().use { result ->
-                    val seats = mutableListOf<Pair<String, Int>>()
+                    val seats = mutableListOf<String>()
                     while (result.next()) {
-                        seats += result.getString("seat_row") to result.getInt("seat_column")
+                        seats += result.getString("seat")
                     }
                     return seats
                 }
@@ -76,23 +86,15 @@ class ReservationRepository {
         }
     }
 
-    fun delete(
-        screeningId: Int,
-        row: SeatRow,
-        column: SeatColumn,
-    ) {
-        val sql =
-            """
-            DELETE FROM reservation
-            WHERE screening_id = ? AND seat_row = ? AND seat_column = ?
-            """.trimIndent()
-
+    fun delete(reservationId: Int) {
         Database.connection().use { connection ->
-            connection.prepareStatement(sql).use { preparedStatement ->
-                preparedStatement.setInt(1, screeningId)
-                preparedStatement.setString(2, row.toString())
-                preparedStatement.setInt(3, column.toString().toInt())
-                preparedStatement.executeUpdate()
+            connection.prepareStatement("DELETE FROM reservation_seat WHERE reservation_id = ?").use {
+                it.setInt(1, reservationId)
+                it.executeUpdate()
+            }
+            connection.prepareStatement("DELETE FROM reservation WHERE id = ?").use {
+                it.setInt(1, reservationId)
+                it.executeUpdate()
             }
         }
     }

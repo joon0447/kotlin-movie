@@ -14,12 +14,17 @@ CREATE TABLE IF NOT EXISTS movie_screening (
 
 CREATE TABLE IF NOT EXISTS reservation (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    screening_id BIGINT NOT NULL,
-    seat_row VARCHAR(1) NOT NULL,
-    seat_column INT NOT NULL,
     total_price INT,
     used_point INT,
-    payment_method VARCHAR(20),
+    payment_method VARCHAR(20)
+);
+
+CREATE TABLE IF NOT EXISTS reservation_seat (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    reservation_id BIGINT NOT NULL,
+    screening_id BIGINT NOT NULL,
+    seat VARCHAR(10) NOT NULL,
+    FOREIGN KEY (reservation_id) REFERENCES reservation(id),
     FOREIGN KEY (screening_id) REFERENCES movie_screening(id),
-    UNIQUE (screening_id, seat_row, seat_column)
+    UNIQUE (screening_id, seat)
 );
