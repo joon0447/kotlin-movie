@@ -7,7 +7,27 @@ import model.seat.SeatColumn
 import model.seat.SeatRow
 
 class ReservationRepository {
-    fun save(
+    fun saveHold(
+        screeningId: Int,
+        seat: Seat,
+    ) {
+        val sql =
+            """
+            INSERT INTO reservation (screening_id, seat_row, seat_column)
+            VALUES (?, ?, ?)
+            """.trimIndent()
+
+        Database.connection().use { connection ->
+            connection.prepareStatement(sql).use { preparedStatement ->
+                preparedStatement.setInt(1, screeningId)
+                preparedStatement.setString(2, seat.row.toString())
+                preparedStatement.setInt(3, seat.column.toString().toInt())
+                preparedStatement.executeUpdate()
+            }
+        }
+    }
+
+    fun updatePayment(
         screeningId: Int,
         seat: Seat,
         totalPrice: Int,
@@ -16,18 +36,19 @@ class ReservationRepository {
     ) {
         val sql =
             """
-            INSERT INTO reservation (screening_id, seat_row, seat_column, total_price, used_point, payment_method)
-            VALUES (?, ?, ?, ?, ?, ?)
+            UPDATE reservation
+            SET total_price = ?, used_point = ?, payment_method = ?
+            WHERE screening_id = ? AND seat_row = ? AND seat_column = ?
             """.trimIndent()
 
         Database.connection().use { connection ->
             connection.prepareStatement(sql).use { preparedStatement ->
-                preparedStatement.setInt(1, screeningId)
-                preparedStatement.setString(2, seat.row.toString())
-                preparedStatement.setInt(3, seat.column.toString().toInt())
-                preparedStatement.setInt(4, totalPrice)
-                preparedStatement.setInt(5, usedPoint)
-                preparedStatement.setString(6, payType.name)
+                preparedStatement.setInt(1, totalPrice)
+                preparedStatement.setInt(2, usedPoint)
+                preparedStatement.setString(3, payType.name)
+                preparedStatement.setInt(4, screeningId)
+                preparedStatement.setString(5, seat.row.toString())
+                preparedStatement.setInt(6, seat.column.toString().toInt())
                 preparedStatement.executeUpdate()
             }
         }

@@ -17,9 +17,9 @@ CREATE TABLE IF NOT EXISTS reservation (
     screening_id BIGINT NOT NULL,
     seat_row VARCHAR(1) NOT NULL,
     seat_column INT NOT NULL,
-    total_price INT NOT NULL,
-    used_point INT NOT NULL,
-    payment_method VARCHAR(20) NOT NULL,
+    total_price INT,
+    used_point INT,
+    payment_method VARCHAR(20),
     FOREIGN KEY (screening_id) REFERENCES movie_screening(id),
     UNIQUE (screening_id, seat_row, seat_column)
 );

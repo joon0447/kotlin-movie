@@ -90,6 +90,14 @@ class CinemaController(
                         movieScreening = selectMovieScreening,
                         selectedSeats = selectSeats,
                     )
+                reservations.forEach { reservation ->
+                    val screeningId =
+                        screeningRepository.findScreeningId(
+                            name = reservation.movie.toString(),
+                            screenStart = reservation.screenTime.start.format("yyyy-MM-dd'T'HH:mm"),
+                        )
+                    reservationRepository.saveHold(screeningId!!, reservation.seat)
+                }
                 OutputView.showReservationInfo(reservations)
                 return reservations
             } catch (e: IllegalArgumentException) {
@@ -126,7 +134,7 @@ class CinemaController(
                             name = result.movie.toString(),
                             screenStart = result.screenTime.start.format("yyyy-MM-dd'T'HH:mm"),
                         )
-                    reservationRepository.save(
+                    reservationRepository.updatePayment(
                         screeningId = screeningId!!,
                         seat = result.seat,
                         totalPrice = finalPrice,
