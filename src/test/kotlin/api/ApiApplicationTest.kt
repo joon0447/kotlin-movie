@@ -17,6 +17,15 @@ class ApiApplicationTest(
     @BeforeEach
     fun setUp() {
         Database.init(url = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1")
+        Database.connection().use { connection ->
+            connection.createStatement().use {
+                it.execute("DELETE FROM reservation_seat")
+                it.execute("DELETE FROM reservation")
+                it.execute("DELETE FROM movie_screening")
+                it.execute("DELETE FROM movie")
+            }
+        }
+        database.DataInitializer.initialize()
         client =
             RestTestClient
                 .bindToServer()
@@ -52,7 +61,7 @@ class ApiApplicationTest(
                     "reservations" : [
                         {
                             "screeningId": 101,
-                            "seats": ["C2", "C3"]
+                            "seats": ["A1", "A2"]
                         }
                     ],
                     "usedPoints": 2000,
@@ -69,5 +78,74 @@ class ApiApplicationTest(
             .exists()
             .jsonPath("$.totalPrice")
             .exists()
+    }
+
+    @Test
+    fun `이미 예약된 좌석을 예매하려는 경우 오류 응답을 반환한다`() {
+        client
+            .post()
+            .uri("/api/reservations")
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(
+                """                                                                                                                                                                                                                                                                                                           
+                {   
+                    "reservations" : [          
+                        {                   
+                            "screeningId": 101,
+                            "seats": ["A1"]                                                                                                                                                                                                                                                                                   
+                        }
+                    ],                                                                                                                                                                                                                                                                                                        
+                    "usedPoints": 0,
+                    "paymentMethod": "CREDIT_CARD"
+                }                               
+                """.trimIndent(),
+            ).exchange()
+            .expectStatus()
+            .isCreated()
+
+        client
+            .post()
+            .uri("/api/reservations")
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(
+                """ 
+                {
+                    "reservations" : [
+                        {
+                            "screeningId": 101,
+                            "seats": ["A1"]     
+                        }                   
+                    ],
+                    "usedPoints": 0,                                                                                                                                                                                                                                                                                          
+                    "paymentMethod": "CREDIT_CARD"
+                }                                                                                                                                                                                                                                                                                                             
+                """.trimIndent(),
+            ).exchange()
+            .expectStatus()
+            .isBadRequest()
+    }
+
+    @Test
+    fun `존재하지 않는 상영에 대해 예매를 요청하면 적절한 오류 응답을 반환한다`() {
+        client
+            .post()
+            .uri("/api/reservations")
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(
+                """                                                                                                                                                                                                                                                                                                           
+                {                                                                                                                                                                                                                                                                                                             
+                    "reservations" : [
+                        {
+                            "screeningId": 99999,
+                            "seats": ["A1"]     
+                        }                   
+                    ],
+                    "usedPoints": 0,                                                                                                                                                                                                                                                                                          
+                    "paymentMethod": "CREDIT_CARD"
+                }                                                                                                                                                                                                                                                                                                             
+                """.trimIndent(),
+            ).exchange()
+            .expectStatus()
+            .isBadRequest()
     }
 }
