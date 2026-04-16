@@ -1,16 +1,18 @@
 package database.repository
 
-import database.DatabaseTest
+import database.Database
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class MovieScreeningRepositoryTest : DatabaseTest() {
+class MovieScreeningRepositoryTest {
     private val movieRepository = MovieRepository()
     private val screeningRepository = MovieScreeningRepository()
 
     @BeforeEach
     fun setUp() {
+        val testUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
+        Database.init(url = testUrl)
         movieRepository.save()
         screeningRepository.save()
     }

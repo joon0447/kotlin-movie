@@ -37,4 +37,35 @@ class ApiApplicationTest(
             .jsonPath("$.movies")
             .isArray()
     }
+
+    @Test
+    fun `예매를 생성한다`() {
+        client
+            .post()
+            .uri("/api/reservations")
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(
+                """
+                {
+                    "reservations" : [
+                        {
+                            "screeningId": 101,
+                            "seats": ["C2", "C3"]
+                        }
+                    ],
+                    "usedPoints": 2000,
+                    "paymentMethod": "CREDIT_CARD"
+                }
+                """.trimIndent(),
+            ).exchange()
+            .expectStatus()
+            .isCreated()
+            .expectHeader()
+            .contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
+            .expectBody()
+            .jsonPath("$.reservationId")
+            .exists()
+            .jsonPath("$.totalPrice")
+            .exists()
+    }
 }
