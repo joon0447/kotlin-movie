@@ -2,14 +2,11 @@ package model
 
 import model.reservation.MovieReservationResult
 import model.reservation.Reservations
-import model.schedule.CinemaSchedule
 import model.schedule.MovieScreening
 import model.seat.SeatColumn
 import model.seat.SeatRow
 
-class CinemaKiosk(
-    val cinemaSchedule: CinemaSchedule,
-) {
+class CinemaKiosk {
     private val reservations = Reservations()
     val reserveResults: List<MovieReservationResult.Success> get() = reservations.all
 

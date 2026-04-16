@@ -6,7 +6,6 @@ import model.movie.MovieId
 import model.movie.MovieName
 import model.movie.RunningTime
 import model.reservation.MovieReservationResult
-import model.schedule.CinemaSchedule
 import model.schedule.MovieScreening
 import model.schedule.ScreenSchedule
 import model.seat.Seat
@@ -112,13 +111,7 @@ class CinemaKioskTest {
                 ),
             )
 
-        val cinemaKiosk =
-            CinemaKiosk(
-                cinemaSchedule =
-                    CinemaSchedule(
-                        screenSchedules = screenSchedules,
-                    ),
-            )
+        val cinemaKiosk = CinemaKiosk()
 
         cinemaKiosk.reserve(
             MovieScreening(
@@ -207,14 +200,6 @@ class CinemaKioskTest {
                             ),
                         ),
                 ),
-            )
-
-        val cinemaKiosk =
-            CinemaKiosk(
-                cinemaSchedule =
-                    CinemaSchedule(
-                        screenSchedules = screenSchedules,
-                    ),
             )
     }
 }

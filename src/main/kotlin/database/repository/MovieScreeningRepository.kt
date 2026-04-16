@@ -6,9 +6,14 @@ import model.CinemaTime
 import model.CinemaTimeRange
 import model.movie.Movie
 import model.movie.MovieId
+import model.movie.MovieName
+import model.movie.RunningTime
 import model.schedule.MovieScreening
+import model.seat.Seat
+import model.seat.SeatColumn
+import model.seat.SeatGrade
 import model.seat.SeatGroup
-import java.sql.ResultSet
+import model.seat.SeatRow
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import kotlin.uuid.ExperimentalUuidApi
@@ -37,40 +42,51 @@ class MovieScreeningRepository {
         }
     }
 
-    fun findAllById(
-        movieById: Map<MovieId, Movie>,
-        seatGroup: SeatGroup,
-    ): List<MovieScreening> {
-        val sql = "SELECT movie_id, screen_start, screen_end FROM movie_screening"
-        val screenings = mutableListOf<MovieScreening>()
+    fun findScreeningsByMovieName(name: String): List<MovieScreening>? {
+        val seatGroup =
+            SeatGroup(
+                seats =
+                    listOf(
+                        Seat(SeatRow("B"), SeatColumn(2), SeatGrade.S),
+                        Seat(SeatRow("B"), SeatColumn(1), SeatGrade.B),
+                        Seat(SeatRow("A"), SeatColumn(2), SeatGrade.B),
+                        Seat(SeatRow("A"), SeatColumn(1), SeatGrade.S),
+                    ),
+            )
+        val sql =
+            """
+            SELECT m.name, m.running_time_minutes, ms.screen_start, ms.screen_end
+            FROM movie m
+            JOIN movie_screening ms ON m.id = ms.movie_id
+            WHERE m.name = ?
+            """.trimIndent()
 
         Database.connection().use { connection ->
             connection.prepareStatement(sql).use { preparedStatement ->
+                preparedStatement.setString(1, name)
                 preparedStatement.executeQuery().use { result ->
+                    val screenings = mutableListOf<MovieScreening>()
                     while (result.next()) {
-                        screenings += result.toMovieScreening(movieById, seatGroup)
+                        val movie =
+                            Movie(
+                                name = MovieName(result.getString("name")),
+                                id = MovieId(Uuid.generateV7()),
+                                runningTime = RunningTime(result.getInt("running_time_minutes")),
+                            )
+                        screenings +=
+                            MovieScreening(
+                                movie = movie,
+                                screenTime =
+                                    CinemaTimeRange(
+                                        start = CinemaTime(result.getTimestamp("screen_start").toLocalDateTime()),
+                                        end = CinemaTime(result.getTimestamp("screen_end").toLocalDateTime()),
+                                    ),
+                                seatGroup = seatGroup,
+                            )
                     }
+                    return screenings.ifEmpty { null }
                 }
             }
         }
-        return screenings
-    }
-
-    private fun ResultSet.toMovieScreening(
-        movieById: Map<MovieId, Movie>,
-        seatGroup: SeatGroup,
-    ): MovieScreening {
-        val movieId = MovieId(Uuid.parse(getString("movie_id")))
-        val movie = movieById[movieId] ?: error("Movie with id $movieId not found")
-        val screenTime =
-            CinemaTimeRange(
-                start = CinemaTime(getTimestamp("screen_start").toLocalDateTime()),
-                end = CinemaTime(getTimestamp("screen_end").toLocalDateTime()),
-            )
-        return MovieScreening(
-            movie = movie,
-            screenTime = screenTime,
-            seatGroup = seatGroup,
-        )
     }
 }

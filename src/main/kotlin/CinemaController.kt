@@ -1,7 +1,6 @@
+import database.repository.MovieScreeningRepository
 import model.CinemaKiosk
 import model.CinemaTime
-import model.movie.CurrentShowingMovie
-import model.movie.Movie
 import model.payment.MoviePayment
 import model.payment.PayType
 import model.payment.policy.discount.EarlyLateDiscount
@@ -16,14 +15,13 @@ import view.OutputView
 
 class CinemaController(
     val cinemaKiosk: CinemaKiosk,
-    val currentShowingMovie: CurrentShowingMovie,
+    val screeningRepository: MovieScreeningRepository,
 ) {
     fun run() {
         if (startReservation().not()) return
         do {
             // 영화 예매
-            val selectedMovie = selectMovie(currentShowingMovie)
-            val movieScreening = getMovieSchedule(selectedMovie)
+            val movieScreening = selectMovieScreenings()
 
             // 날짜 선택하고 해당 날짜의 상영 일정 중 선택
             val selectedDate = selectDate()
@@ -48,16 +46,14 @@ class CinemaController(
         }
     }
 
-    private fun selectMovie(currentShowingMovie: CurrentShowingMovie): Movie {
+    private fun selectMovieScreenings(): List<MovieScreening> {
         while (true) {
-            val input = InputView.inputMovieName()
-            val movie = currentShowingMovie.findByName(input)
-            if (movie != null) return movie
+            val name = InputView.inputMovieName()
+            val screenings = screeningRepository.findScreeningsByMovieName(name)
+            if (screenings != null) return screenings
             OutputView.showInvalidMovieName()
         }
     }
-
-    private fun getMovieSchedule(movie: Movie): List<MovieScreening> = cinemaKiosk.cinemaSchedule.getMovieScreenings(movie)
 
     private fun selectDate(): CinemaTime {
         while (true) {
