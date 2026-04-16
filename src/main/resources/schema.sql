@@ -1,12 +1,12 @@
 CREATE TABLE IF NOT EXISTS movie (
-    id VARCHAR(64) PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     running_time_minutes INT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS movie_screening (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    movie_id VARCHAR(64) NOT NULL,
+    id BIGINT PRIMARY KEY,
+    movie_id BIGINT NOT NULL,
     screen_start TIMESTAMP NOT NULL,
     screen_end TIMESTAMP NOT NULL,
     FOREIGN KEY (movie_id) REFERENCES movie(id)

@@ -10,7 +10,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 object DefaultMovies {
     data class MovieRow(
-        val id: String,
+        val id: Int,
         val name: String,
         val runningTimeMinutes: Int,
     )
@@ -18,12 +18,12 @@ object DefaultMovies {
     val rows: List<MovieRow> =
         listOf(
             MovieRow(
-                id = "00000000-0000-0000-0000-000000000001",
+                id = 1,
                 name = "인터스텔라",
                 runningTimeMinutes = 169,
             ),
             MovieRow(
-                id = "00000000-0000-0000-0000-000000000002",
+                id = 2,
                 name = "오펜하이머",
                 runningTimeMinutes = 180,
             ),
@@ -33,7 +33,7 @@ object DefaultMovies {
 
     private fun MovieRow.toMovie(): Movie =
         Movie(
-            id = MovieId(Uuid.parse(id)),
+            id = MovieId(Uuid.generateV7()),
             name = MovieName(name),
             runningTime = RunningTime(runningTimeMinutes),
         )

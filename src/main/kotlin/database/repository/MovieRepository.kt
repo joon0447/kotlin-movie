@@ -1,5 +1,7 @@
 package database.repository
 
+import api.dto.MovieResponse
+import api.dto.ScreeningResponse
 import database.Database
 import database.default.DefaultMovies
 import kotlin.uuid.ExperimentalUuidApi
@@ -17,7 +19,7 @@ class MovieRepository {
         Database.connection().use { connection ->
             connection.prepareStatement(sql).use { preparedStatement ->
                 DefaultMovies.rows.forEach { row ->
-                    preparedStatement.setString(1, row.id)
+                    preparedStatement.setInt(1, row.id)
                     preparedStatement.setString(2, row.name)
                     preparedStatement.setInt(3, row.runningTimeMinutes)
                     preparedStatement.addBatch()

@@ -1,5 +1,7 @@
 package database.repository
 
+import api.dto.MovieResponse
+import api.dto.ScreeningResponse
 import database.Database
 import database.default.DefaultScreenings
 import model.CinemaTime
@@ -26,17 +28,18 @@ class MovieScreeningRepository(
     fun save() {
         val sql =
             """
-            MERGE INTO movie_screening (movie_id, screen_start, screen_end)
+            MERGE INTO movie_screening (id, movie_id, screen_start, screen_end)
             KEY (movie_id, screen_start)
-            VALUES (?, ?, ?)
+            VALUES (?,?, ?, ?)
             """.trimIndent()
 
         Database.connection().use { connection ->
             connection.prepareStatement(sql).use { preparedStatement ->
                 DefaultScreenings.rows.forEach { row ->
-                    preparedStatement.setString(1, row.movieId)
-                    preparedStatement.setTimestamp(2, Timestamp.valueOf(LocalDateTime.parse(row.startAt)))
-                    preparedStatement.setTimestamp(3, Timestamp.valueOf(LocalDateTime.parse(row.endAt)))
+                    preparedStatement.setInt(1, row.id)
+                    preparedStatement.setInt(2, row.movieId)
+                    preparedStatement.setTimestamp(3, Timestamp.valueOf(LocalDateTime.parse(row.startAt)))
+                    preparedStatement.setTimestamp(4, Timestamp.valueOf(LocalDateTime.parse(row.endAt)))
                     preparedStatement.addBatch()
                 }
                 preparedStatement.executeBatch()
@@ -119,6 +122,50 @@ class MovieScreeningRepository(
                             )
                     }
                     return screenings.ifEmpty { null }
+                }
+            }
+        }
+    }
+
+    fun findAllWithScreenings(): List<MovieResponse> {
+        val sql =
+            """
+            SELECT m.id AS movie_id, m.name, m.running_time_minutes, 
+                   ms.id AS screening_id, ms.screen_start, ms.screen_end
+            FROM movie m
+            JOIN movie_screening ms ON m.id = ms.movie_id
+            ORDER BY m.id, ms.screen_start
+            """.trimIndent()
+
+        Database.connection().use { connection ->
+            connection.prepareStatement(sql).use { preparedStatement ->
+                preparedStatement.executeQuery().use { result ->
+                    val moviesMap = linkedMapOf<Int, MovieResponse>()
+                    while (result.next()) {
+                        val movieId = result.getInt("movie_id")
+                        val screening =
+                            ScreeningResponse(
+                                id = result.getInt("screening_id"),
+                                startAt = result.getTimestamp("screen_start").toLocalDateTime().toString(),
+                                endAt = result.getTimestamp("screen_end").toLocalDateTime().toString(),
+                            )
+                        val existing = moviesMap[movieId]
+                        if (existing != null) {
+                            moviesMap[movieId] =
+                                existing.copy(
+                                    screenings = existing.screenings + screening,
+                                )
+                        } else {
+                            moviesMap[movieId] =
+                                MovieResponse(
+                                    id = movieId,
+                                    title = result.getString("name"),
+                                    runningTimeMinutes = result.getInt("running_time_minutes"),
+                                    screenings = listOf(screening),
+                                )
+                        }
+                    }
+                    return moviesMap.values.toList()
                 }
             }
         }

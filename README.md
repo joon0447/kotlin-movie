@@ -15,6 +15,6 @@
   - id, screening_id, seat_row, seat_column, seat_grade, price, created_at
 
 ## API
-- [ ] 스프링 연동하기
-- [ ] 영화 상영 정보 조회 API 구현
+- [x] 스프링 연동하기
+- [x] 영화 상영 정보 조회 API 구현
 - [ ] 예매 API 구현
