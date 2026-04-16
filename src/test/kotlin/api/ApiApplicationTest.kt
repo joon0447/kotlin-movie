@@ -1,5 +1,6 @@
 package api
 
+import database.Database
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
@@ -15,6 +16,7 @@ class ApiApplicationTest(
 
     @BeforeEach
     fun setUp() {
+        Database.init(url = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1")
         client =
             RestTestClient
                 .bindToServer()
