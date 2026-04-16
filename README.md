@@ -13,3 +13,8 @@
 - [x] 예매 정보를 데이터베이스에 저장한다
   - reservation 테이블
   - id, screening_id, seat_row, seat_column, seat_grade, price, created_at
+
+## API
+- [ ] 스프링 연동하기
+- [ ] 영화 상영 정보 조회 API 구현
+- [ ] 예매 API 구현
