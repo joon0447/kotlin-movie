@@ -47,6 +47,60 @@ class MovieScreeningRepository(
         }
     }
 
+    fun findByScreeningId(screeningId: Int): MovieScreening? {
+        val seatGroup =
+            SeatGroup(
+                seats =
+                    listOf(
+                        Seat(SeatRow("B"), SeatColumn(2), SeatGrade.S),
+                        Seat(SeatRow("B"), SeatColumn(1), SeatGrade.B),
+                        Seat(SeatRow("A"), SeatColumn(2), SeatGrade.B),
+                        Seat(SeatRow("A"), SeatColumn(1), SeatGrade.S),
+                    ),
+            )
+
+        val sql =
+            """                                                                                                                                                                                                    
+            SELECT ms.id AS screening_id, m.name, m.running_time_minutes, ms.screen_start, ms.screen_end
+            FROM movie m                                                                                                                                                                                           
+            JOIN movie_screening ms ON m.id = ms.movie_id
+            WHERE ms.id = ?                     
+            """.trimIndent()
+
+        Database.connection().use { connection ->
+            connection.prepareStatement(sql).use { preparedStatement ->
+                preparedStatement.setInt(1, screeningId)
+                preparedStatement.executeQuery().use { result ->
+                    if (!result.next()) return null
+                    val movie =
+                        Movie(
+                            name = MovieName(result.getString("name")),
+                            id = MovieId(Uuid.generateV7()),
+                            runningTime = RunningTime(result.getInt("running_time_minutes")),
+                        )
+                    val reserved = reservationRepository.findByScreeningId(screeningId)
+                    val reservedSeatSet =
+                        reserved
+                            .mapNotNull { seat ->
+                                val row = seat.substring(0, 1)
+                                val col = seat.substring(1).toInt()
+                                seatGroup.getSeat(SeatRow(row), SeatColumn(col))
+                            }.toSet()
+                    return MovieScreening(
+                        movie = movie,
+                        screenTime =
+                            CinemaTimeRange(
+                                start = CinemaTime(result.getTimestamp("screen_start").toLocalDateTime()),
+                                end = CinemaTime(result.getTimestamp("screen_end").toLocalDateTime()),
+                            ),
+                        seatGroup = seatGroup,
+                        reservedSeats = reservedSeatSet,
+                    )
+                }
+            }
+        }
+    }
+
     fun findScreeningId(
         name: String,
         screenStart: String,

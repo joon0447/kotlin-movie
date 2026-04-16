@@ -26,7 +26,7 @@ class ReservationRepository {
     ) {
         val sql =
             """
-            INSERT INTO reservations_seat (reservation_id, screening_id, seat)
+            INSERT INTO reservation_seat (reservation_id, screening_id, seat)
             VALUES (?, ?, ?)
             """.trimIndent()
 
@@ -34,7 +34,7 @@ class ReservationRepository {
             connection.prepareStatement(sql).use { preparedStatement ->
                 preparedStatement.setInt(1, reservationId)
                 preparedStatement.setInt(2, screeningId)
-                preparedStatement.setString(3, seat.toString())
+                preparedStatement.setString(3, "${seat.row}${seat.column}")
                 preparedStatement.executeUpdate()
             }
         }
